@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายงานผล PM 2.5 ทั่วประเทศไทย</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
     <style>
@@ -10,6 +11,10 @@
             text-align: center;
             margin: 50px;
             background-color: #f4f4f4;
+        }
+
+        h1 {
+            margin-bottom: 20px;
         }
 
         #province-buttons {
@@ -41,74 +46,66 @@
             font-size: 20px;
         }
 
+        #date-picker-container {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #date-picker-container select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #date-picker-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #date-picker-container button:hover {
+            background-color: #0056b3;
+        }
+
         .card-wrapper {
             position: relative;
-            width: 1080px;
-            height: 600px; /* ปรับขนาดความสูงตามต้องการ */
+            width: 80%;
             margin: 0 auto;
         }
 
         .background-card {
             width: 100%;
-            height: 100%;
+            height: 300px;
             background-size: cover;
+            background-position: center;
             border-radius: 10px;
             position: absolute;
             top: 0;
             left: 0;
         }
 
-        .background-card.level-1 {
-            background-image: url('https://img5.pic.in.th/file/secure-sv1/1_20250123_212100_0000.png');
-        }
-
-        .background-card.level-2 {
-            background-image: url('https://img5.pic.in.th/file/secure-sv1/2_20250123_212100_0001.png');
-        }
-
-        .background-card.level-3 {
-            background-image: url('https://img2.pic.in.th/pic/3_20250123_212100_0002.png');
-        }
-
-        .background-card.level-4 {
-            background-image: url('https://img2.pic.in.th/pic/4_20250123_212100_0003.png');
-        }
-
-        .background-card.level-5 {
-            background-image: url('https://img5.pic.in.th/file/secure-sv1/5_20250123_212100_0004.png');
-        }
-
         .detail-card {
-            position: absolute;
-            top: 20px; /* ปรับตำแหน่งตามต้องการ */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%; /* ปรับขนาดตามต้องการ */
-            background-color: rgba(255, 255, 255, 0.9); /* สีพื้นหลังและความโปร่งแสง */
+            position: relative;
+            margin-top: 320px;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: left;
         }
 
-        .detail-card.level-1 {
-            background-color: #63d3ff; /* สีฟ้า */
-        }
-
-        .detail-card.level-2 {
-            background-color: #6bff63; /* สีเขียว */
-        }
-
-        .detail-card.level-3 {
-            background-color: #f2ff63; /* สีเหลือง */
-        }
-
-        .detail-card.level-4 {
-            background-color: #ffa463; /* สีส้ม */
-        }
-
-        .detail-card.level-5 {
-            background-color: #ff6363; /* สีแดง */
+        .card-content {
+            display: flex;
+            align-items: center;
         }
 
         .card-content img {
@@ -130,7 +127,6 @@
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
-            width: 100%;
         }
 
         .weather-info div {
@@ -143,12 +139,37 @@
             font-size: 1.5em;
             margin-bottom: 5px;
         }
+
+        #results {
+            margin-top: 30px;
+        }
+
+        /* กำหนดระดับต่างๆ */
+        .background-card.level-1 {
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/1_20250123_212100_0000.png');
+        }
+
+        .background-card.level-2 {
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/2_20250123_212100_0001.png');
+        }
+
+        .background-card.level-3 {
+            background-image: url('https://img2.pic.in.th/pic/3_20250123_212100_0002.png');
+        }
+
+        .background-card.level-4 {
+            background-image: url('https://img2.pic.in.th/pic/4_20250123_212100_0003.png');
+        }
+
+        .background-card.level-5 {
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/5_20250123_212100_0004.png');
+        }
     </style>
 </head>
 <body>
     <h1>รายงานผล PM 2.5 ทั่วประเทศไทย</h1>
+
     <div id="province-buttons">
-        <!-- ปุ่มจังหวัด -->
         <button class="province-button" onclick="fetchData('Bangkok')">
             <i class="bi bi-building"></i> กรุงเทพมหานคร
         </button>
@@ -158,7 +179,13 @@
         <button class="province-button" onclick="fetchData('Phuket')">
             <i class="bi bi-house"></i> ภูเก็ต
         </button>
-        <!-- เพิ่มจังหวัดตามต้องการ -->
+    </div>
+
+    <div id="date-picker-container">
+        <select id="day-picker"></select>
+        <select id="month-picker"></select>
+        <select id="year-picker"></select>
+        <button onclick="fetchHistoricalData()">ดูข้อมูลย้อนหลัง</button>
     </div>
 
     <div id="results"></div>
@@ -167,47 +194,57 @@
         const weatherApiKey = '41c1aef7e4e507e010fb4e2705e6f0b6';
         const pm25ApiKey = '4cfc1671f195ae9830197e593a3eb4bb17beea4b';
 
-        const icons = {
-            1: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png', // สีแดง
-            2: 'https://img2.pic.in.th/pic/-42_20250123204517.png', // สีส้ม
-            3: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png', // สีเหลือง
-            4: 'https://img2.pic.in.th/pic/-410f208aa4c95c2d94.png', // สีเขียว
-            5: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png' // สีฟ้า
-        };
+        // สร้าง dropdown สำหรับวันที่
+        function populateDatePickers() {
+            const dayPicker = document.getElementById('day-picker');
+            const monthPicker = document.getElementById('month-picker');
+            const yearPicker = document.getElementById('year-picker');
 
-        function getAirQualityLevel(aqi) {
-            if (aqi <= 25) return { level: 1, text: 'อากาศดี๊ดี' };
-            if (aqi <= 50) return { level: 2, text: 'อากาศดี' };
-            if (aqi <= 100) return { level: 3, text: 'อยู่ในระดับปานกลาง' };
-            if (aqi <= 200) return { level: 4, text: 'เริ่มมีผลกระทบ' };
-            return { level: 5, text: 'มีผลกระทบต่อสุขภาพ' };
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                dayPicker.appendChild(option);
+            }
+
+            const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+            monthNames.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.textContent = month;
+                monthPicker.appendChild(option);
+            });
+
+            const currentYear = new Date().getFullYear();
+            for (let year = 2015; year <= currentYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearPicker.appendChild(option);
+            }
         }
 
         async function fetchData(province) {
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
+            resultsDiv.innerHTML = 'กำลังโหลด...';
 
             try {
-                // URL ของ API ที่ต้องการดึงข้อมูลสภาพอากาศ
                 const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${province},TH&appid=${weatherApiKey}&units=metric`);
                 const weatherData = await weatherResponse.json();
 
-                // URL ของ API ที่ต้องการดึงข้อมูล PM 2.5
                 const pm25Response = await fetch(`https://api.waqi.info/feed/${province}/?token=${pm25ApiKey}`);
                 const pm25Data = await pm25Response.json();
 
                 const airQuality = getAirQualityLevel(pm25Data.data.aqi);
 
-                // สร้างการ์ดรูปภาพพื้นหลัง
                 const backgroundCard = document.createElement('div');
                 backgroundCard.className = `background-card level-${airQuality.level}`;
 
-                // สร้างการ์ดสำหรับแสดงรายละเอียด
                 const detailCard = document.createElement('div');
                 detailCard.className = `detail-card level-${airQuality.level}`;
 
                 const icon = document.createElement('img');
-                icon.src = icons[airQuality.level]; // ใช้ไอคอนตามระดับ
+                icon.src = airQuality.icon;
 
                 const content = document.createElement('div');
                 content.className = 'card-content';
@@ -236,7 +273,6 @@
                 detailCard.appendChild(icon);
                 detailCard.appendChild(content);
 
-                // สร้าง wrapper สำหรับการ์ดทั้งสอง
                 const cardWrapper = document.createElement('div');
                 cardWrapper.className = 'card-wrapper';
                 cardWrapper.appendChild(backgroundCard);
@@ -244,28 +280,45 @@
 
                 resultsDiv.appendChild(cardWrapper);
 
-                // ข้อมูลย้อนหลัง
-                const historicalData = document.createElement('div');
-                historicalData.className = 'historical-data';
-                historicalData.innerHTML = '<h3>ข้อมูลย้อนหลัง</h3>';
-                pm25Data.data.forecast.daily.pm25.forEach(record => {
-                    const historyItem = document.createElement('p');
-                    historyItem.textContent = `วันที่ ${record.day}: PM 2.5 - ${record.avg}`;
-                    historicalData.appendChild(historyItem);
-                });
-                resultsDiv.appendChild(historicalData);
-
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error:', error);
                 resultsDiv.textContent = 'ไม่สามารถดึงข้อมูลได้';
             }
         }
 
-        // ตั้งค่าให้ดึงข้อมูลทุกๆ 1 ชั่วโมง (3600000 milliseconds)
-        setInterval(() => {
-            const province = document.querySelector('.province-button.selected')?.getAttribute('data-province');
-            if (province) fetchData(province);
-        }, 3600000);
+        function getAirQualityLevel(aqi) {
+            if (aqi <= 25) return { level: 1, text: 'อากาศดี๊ดี', icon: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png' };
+            if (aqi <= 50) return { level: 2, text: 'อากาศดี', icon: 'https://img2.pic.in.th/pic/-42_20250123204517.png' };
+            if (aqi <= 100) return { level: 3, text: 'อยู่ในระดับปานกลาง', icon: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png' };
+            if (aqi <= 200) return { level: 4, text: 'เริ่มมีผลกระทบ', icon: 'https://img2.pic.in.th/pic/-41-1da832b063b77fea9.png' };
+            return { level: 5, text: 'มีผลกระทบต่อสุขภาพ', icon: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png' };
+        }
+
+        async function fetchHistoricalData() {
+            const day = document.getElementById('day-picker').value;
+            const month = document.getElementById('month-picker').value;
+            const year = document.getElementById('year-picker').value;
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'กำลังโหลดข้อมูลย้อนหลัง...';
+
+            try {
+                const historicalResponse = await fetch(`https://api.waqi.info/feed/${year}-${month}-${day}/?token=${pm25ApiKey}`);
+                const historicalData = await historicalResponse.json();
+
+                if (historicalData.status === 'ok') {
+                    resultsDiv.innerHTML = `<h3>ข้อมูล PM 2.5 วันที่ ${day}/${month}/${year}</h3>`;
+                    resultsDiv.innerHTML += `<p>PM 2.5: ${historicalData.data.aqi}</p>`;
+                } else {
+                    resultsDiv.innerHTML = 'ไม่พบข้อมูลในวันที่เลือก';
+                }
+            } catch (error) {
+                console.error('Error fetching historical data:', error);
+                resultsDiv.textContent = 'ไม่สามารถดึงข้อมูลย้อนหลังได้';
+            }
+        }
+
+        populateDatePickers();
     </script>
 </body>
 </html>
