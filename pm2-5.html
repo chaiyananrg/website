@@ -44,15 +44,18 @@
         .card-wrapper {
             position: relative;
             width: 1080px;
+            height: 600px; /* ปรับขนาดความสูงตามต้องการ */
             margin: 0 auto;
         }
 
         .background-card {
             width: 100%;
-            height: 400px; /* ปรับขนาดความสูงตามต้องการ */
+            height: 100%;
             background-size: cover;
             border-radius: 10px;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         .background-card.level-1 {
@@ -80,7 +83,7 @@
             top: 20px; /* ปรับตำแหน่งตามต้องการ */
             left: 50%;
             transform: translateX(-50%);
-            width: 90%; /* ปรับขนาดตามต้องการ */
+            width: 80%; /* ปรับขนาดตามต้องการ */
             background-color: rgba(255, 255, 255, 0.9); /* สีพื้นหลังและความโปร่งแสง */
             border-radius: 10px;
             padding: 20px;
@@ -171,7 +174,7 @@
 
         const icons = {
             1: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png', // สีแดง
-            2: 'https://img2.pic.in.th/pic/-41-1da832b063b77fea9.png', // สีส้ม
+            2: 'https://img2.pic.in.th/pic/-42_20250123204517.png', // สีส้ม
             3: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png', // สีเหลือง
             4: 'https://img2.pic.in.th/pic/-410f208aa4c95c2d94.png', // สีเขียว
             5: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png' // สีฟ้า
