@@ -11,10 +11,11 @@
       font-family: "Poppins", Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f0f8ff; /* สีพื้นหลังฟ้าอ่อน */
+      background: #ffffff; /* สีพื้นหลังเว็บไซต์ */
+      color: #333;
     }
     header {
-      background: linear-gradient(135deg, #32CD32, #1E90FF); /* เขียว-ฟ้า */
+      background: linear-gradient(135deg, #32CD32, #FFA500, #FFFF00); /* เขียว-ส้ม-เหลือง */
       color: white;
       padding: 20px;
       text-align: center;
@@ -34,43 +35,39 @@
       margin: 20px auto;
       border-collapse: separate;
       border-spacing: 0 10px; /* ระยะห่างระหว่างแถว */
-      background: white;
-      border-radius: 10px;
-    }
-    table th, table td {
-      padding: 15px;
-      text-align: center;
-      border: none;
     }
     table th {
-      background: #4CAF50;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.2em;
+      background: linear-gradient(135deg, #32CD32, #FFA500, #FFFF00); /* เขียว-ส้ม-เหลือง */
       color: white;
       border-radius: 10px 10px 0 0;
-      font-size: 1.2em;
     }
     table td {
-      background: #ffffff;
+      padding: 15px;
+      text-align: center;
       border-radius: 10px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
       font-size: 1em;
+      color: #333;
     }
     .level-good {
-      background: #90EE90;
+      background: #90EE90; /* เขียวอ่อน */
     }
     .level-moderate {
-      background: #1E90FF;
+      background: #87CEEB; /* ฟ้า */
       color: white;
     }
     .level-unhealthy-sensitive {
-      background: #FFA500;
+      background: #FFA500; /* ส้ม */
       color: white;
     }
     .level-unhealthy {
-      background: #FF4500;
+      background: #FF6347; /* แดงอ่อน */
       color: white;
     }
     .level-very-unhealthy {
-      background: #8B008B;
+      background: #8B008B; /* ม่วงเข้ม */
       color: white;
     }
     footer {
@@ -83,25 +80,6 @@
     }
     footer p {
       margin: 0;
-    }
-    .icon {
-      font-size: 24px;
-      margin-right: 10px;
-    }
-    .icon-good {
-      color: #32CD32; /* เขียว */
-    }
-    .icon-moderate {
-      color: #1E90FF; /* ฟ้า */
-    }
-    .icon-unhealthy-sensitive {
-      color: #FFA500; /* ส้ม */
-    }
-    .icon-unhealthy {
-      color: #FF4500; /* แดง */
-    }
-    .icon-very-unhealthy {
-      color: #8B008B; /* ม่วง */
     }
   </style>
 </head>
@@ -170,7 +148,7 @@
             <tr class="${level.class}">
               <td>${province}</td>
               <td>${pm25}</td>
-              <td><span class="icon ${level.icon}"></span>${level.label}</td>
+              <td>${level.label}</td>
             </tr>
           `;
           tableBody.innerHTML += row;
@@ -185,11 +163,11 @@
     }
 
     function getPmLevel(pm25) {
-      if (pm25 <= 50) return { label: "ดี", class: "level-good", icon: "icon-good" };
-      if (pm25 <= 100) return { label: "ปานกลาง", class: "level-moderate", icon: "icon-moderate" };
-      if (pm25 <= 150) return { label: "มีผลกระทบต่อบางคน", class: "level-unhealthy-sensitive", icon: "icon-unhealthy-sensitive" };
-      if (pm25 <= 200) return { label: "อันตราย", class: "level-unhealthy", icon: "icon-unhealthy" };
-      return { label: "อันตรายมาก", class: "level-very-unhealthy", icon: "icon-very-unhealthy" };
+      if (pm25 <= 50) return { label: "ดี", class: "level-good" };
+      if (pm25 <= 100) return { label: "ปานกลาง", class: "level-moderate" };
+      if (pm25 <= 150) return { label: "มีผลกระทบต่อบางคน", class: "level-unhealthy-sensitive" };
+      if (pm25 <= 200) return { label: "อันตราย", class: "level-unhealthy" };
+      return { label: "อันตรายมาก", class: "level-very-unhealthy" };
     }
 
     fetchAirQuality();
