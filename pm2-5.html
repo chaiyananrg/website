@@ -31,6 +31,7 @@
       padding: 20px;
       border-radius: 10px;
       font-size: 48px;
+      margin-bottom: 20px;
     }
     .card {
       display: flex;
@@ -41,13 +42,12 @@
       padding: 20px;
       margin-top: 20px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      flex-direction: column;
+      text-align: center;
     }
     .card img {
       width: 150px;
-    }
-    .details {
-      flex-grow: 1;
-      padding-left: 20px;
+      margin-bottom: 10px;
     }
     .details h1 {
       font-size: 100px;
@@ -68,7 +68,8 @@
   <script>
     const API_KEY = "41c1aef7e4e507e010fb4e2705e6f0b6";
     const API_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
-    const DEFAULT_CITY = "Bangkok"; // เลือกจังหวัดเริ่มต้น เช่น กรุงเทพ
+    const DEFAULT_CITY = "Bangkok"; // จังหวัดเริ่มต้น
+    const UPDATE_INTERVAL = 60 * 60 * 1000; // อัปเดตทุก 1 ชั่วโมง (มิลลิวินาที)
 
     async function fetchWeather(city) {
       try {
@@ -82,7 +83,7 @@
     }
 
     function updateContent(data) {
-      const pm25 = Math.floor(Math.random() * 150); // ตัวอย่าง PM2.5 (สมมติให้ API ไม่มี)
+      const pm25 = Math.floor(Math.random() * 150); // ตัวอย่าง PM2.5 (API จริงอาจต้องหาเพิ่ม)
       const aqiLevel = getAQILevel(pm25);
 
       // อัปเดตพื้นหลังตามระดับ PM 2.5
@@ -139,6 +140,7 @@
     }
 
     fetchWeather(DEFAULT_CITY);
+    setInterval(() => fetchWeather(DEFAULT_CITY), UPDATE_INTERVAL); // อัปเดตทุก 1 ชั่วโมง
   </script>
 </body>
 </html>
