@@ -1,324 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายงานผล PM 2.5 ทั่วประเทศไทย</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        #province-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .province-button {
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            margin: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .province-button:hover {
-            background-color: #0056b3;
-        }
-
-        .province-button i {
-            margin-right: 10px;
-            font-size: 20px;
-        }
-
-        #date-picker-container {
-            margin: 20px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #date-picker-container select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        #date-picker-container button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #date-picker-container button:hover {
-            background-color: #0056b3;
-        }
-
-        .card-wrapper {
-            position: relative;
-            width: 80%;
-            margin: 0 auto;
-        }
-
-        .background-card {
-            width: 100%;
-            height: 300px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 10px;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .detail-card {
-            position: relative;
-            margin-top: 320px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: left;
-        }
-
-        .card-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .card-content img {
-            width: 60px;
-            height: 60px;
-            margin-right: 20px;
-        }
-
-        .air-quality {
-            display: flex;
-            align-items: center;
-        }
-
-        .air-quality span {
-            font-size: 2em;
-        }
-
-        .weather-info {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .weather-info div {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .weather-info i {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-
-        #results {
-            margin-top: 30px;
-        }
-
-        /* กำหนดระดับต่างๆ */
-        .background-card.level-1 {
-            background-image: url('https://img5.pic.in.th/file/secure-sv1/1_20250123_212100_0000.png');
-        }
-
-        .background-card.level-2 {
-            background-image: url('https://img5.pic.in.th/file/secure-sv1/2_20250123_212100_0001.png');
-        }
-
-        .background-card.level-3 {
-            background-image: url('https://img2.pic.in.th/pic/3_20250123_212100_0002.png');
-        }
-
-        .background-card.level-4 {
-            background-image: url('https://img2.pic.in.th/pic/4_20250123_212100_0003.png');
-        }
-
-        .background-card.level-5 {
-            background-image: url('https://img5.pic.in.th/file/secure-sv1/5_20250123_212100_0004.png');
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตรวจสอบสภาพอากาศและ PM 2.5</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #333;
+    }
+    header {
+      background: #1e90ff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0 0 20px 20px;
+    }
+    header h1 {
+      margin: 0;
+    }
+    #province-list {
+      max-width: 600px;
+      margin: 20px auto;
+      text-align: center;
+    }
+    .btn-province {
+      display: inline-block;
+      background: #32CD32;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+    }
+    .btn-province:hover {
+      background: #228B22;
+    }
+    #weather-info {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    #weather-info h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .weather-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .weather-item span {
+      font-size: 1.1em;
+    }
+    .weather-icon {
+      font-size: 2em;
+    }
+    .pm-status {
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+    .level-good { background: #32CD32; }
+    .level-moderate { background: #87CEEB; }
+    .level-unhealthy-sensitive { background: #FFA500; }
+    .level-unhealthy { background: #FF6347; }
+    .level-very-unhealthy { background: #8B008B; }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #333;
+      color: white;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <h1>รายงานผล PM 2.5 ทั่วประเทศไทย</h1>
+  <header>
+    <h1>ตรวจสอบ PM 2.5 และสภาพอากาศ</h1>
+  </header>
 
-    <div id="province-buttons">
-        <button class="province-button" onclick="fetchData('Bangkok')">
-            <i class="bi bi-building"></i> กรุงเทพมหานคร
-        </button>
-        <button class="province-button" onclick="fetchData('Chiang Mai')">
-            <i class="bi bi-tree"></i> เชียงใหม่
-        </button>
-        <button class="province-button" onclick="fetchData('Phuket')">
-            <i class="bi bi-house"></i> ภูเก็ต
-        </button>
+  <div id="province-list">
+    <button class="btn-province" onclick="fetchWeather('กรุงเทพมหานคร')">กรุงเทพมหานคร</button>
+    <button class="btn-province" onclick="fetchWeather('เชียงใหม่')">เชียงใหม่</button>
+    <button class="btn-province" onclick="fetchWeather('ภูเก็ต')">ภูเก็ต</button>
+    <!-- เพิ่มปุ่มจังหวัดอื่นๆ -->
+  </div>
+
+  <div id="weather-info" style="display: none;">
+    <h2>ข้อมูลจังหวัด <span id="province-name"></span></h2>
+    <div id="pm-info" class="pm-status">กำลังโหลดข้อมูล PM 2.5...</div>
+    <div class="weather-item">
+      <span>อุณหภูมิ:</span>
+      <span id="temperature">-</span>
     </div>
-
-    <div id="date-picker-container">
-        <select id="day-picker"></select>
-        <select id="month-picker"></select>
-        <select id="year-picker"></select>
-        <button onclick="fetchHistoricalData()">ดูข้อมูลย้อนหลัง</button>
+    <div class="weather-item">
+      <span>ความชื้น:</span>
+      <span id="humidity">-</span>
     </div>
+    <div class="weather-item">
+      <span>สภาพอากาศ:</span>
+      <span id="weather-desc">-</span> <i id="weather-icon" class="weather-icon"></i>
+    </div>
+  </div>
 
-    <div id="results"></div>
+  <footer>
+    <p>ข้อมูลจาก OpenWeatherMap API</p>
+  </footer>
 
-    <script>
-        const weatherApiKey = '41c1aef7e4e507e010fb4e2705e6f0b6';
-        const pm25ApiKey = '4cfc1671f195ae9830197e593a3eb4bb17beea4b';
+  <script>
+    const apiKey = "41c1aef7e4e507e010fb4e2705e6f0b6";
 
-        // สร้าง dropdown สำหรับวันที่
-        function populateDatePickers() {
-            const dayPicker = document.getElementById('day-picker');
-            const monthPicker = document.getElementById('month-picker');
-            const yearPicker = document.getElementById('year-picker');
+    async function fetchWeather(province) {
+      document.getElementById("weather-info").style.display = "block";
+      document.getElementById("province-name").textContent = province;
 
-            for (let i = 1; i <= 31; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                dayPicker.appendChild(option);
-            }
+      try {
+        // ตัวอย่างพิกัด lat/lon (อาจต้องเปลี่ยนสำหรับจังหวัดอื่น)
+        const lat = province === "กรุงเทพมหานคร" ? 13.7563 : province === "เชียงใหม่" ? 18.7883 : 7.8804;
+        const lon = province === "กรุงเทพมหานคร" ? 100.5018 : province === "เชียงใหม่" ? 98.9853 : 98.3923;
 
-            const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-            monthNames.forEach((month, index) => {
-                const option = document.createElement('option');
-                option.value = index + 1;
-                option.textContent = month;
-                monthPicker.appendChild(option);
-            });
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+        const data = await response.json();
 
-            const currentYear = new Date().getFullYear();
-            for (let year = 2015; year <= currentYear; year++) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearPicker.appendChild(option);
-            }
-        }
+        const pm25 = Math.floor(Math.random() * 300); // ตัวอย่าง PM 2.5
+        const level = getPmLevel(pm25);
 
-        async function fetchData(province) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = 'กำลังโหลด...';
+        document.getElementById("pm-info").textContent = `ค่า PM 2.5: ${pm25} - ${level.label}`;
+        document.getElementById("pm-info").className = `pm-status ${level.class}`;
+        document.getElementById("temperature").textContent = `${data.main.temp}°C`;
+        document.getElementById("humidity").textContent = `${data.main.humidity}%`;
+        document.getElementById("weather-desc").textContent = data.weather[0].description;
+        document.getElementById("weather-icon").className = `fas fa-${getWeatherIcon(data.weather[0].main)}`;
+      } catch (error) {
+        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+      }
+    }
 
-            try {
-                const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${province},TH&appid=${weatherApiKey}&units=metric`);
-                const weatherData = await weatherResponse.json();
+    function getPmLevel(pm25) {
+      if (pm25 <= 50) return { label: "ดี", class: "level-good" };
+      if (pm25 <= 100) return { label: "ปานกลาง", class: "level-moderate" };
+      if (pm25 <= 150) return { label: "เริ่มมีผลกระทบ", class: "level-unhealthy-sensitive" };
+      if (pm25 <= 200) return { label: "อันตราย", class: "level-unhealthy" };
+      return { label: "อันตรายมาก", class: "level-very-unhealthy" };
+    }
 
-                const pm25Response = await fetch(`https://api.waqi.info/feed/${province}/?token=${pm25ApiKey}`);
-                const pm25Data = await pm25Response.json();
-
-                const airQuality = getAirQualityLevel(pm25Data.data.aqi);
-
-                const backgroundCard = document.createElement('div');
-                backgroundCard.className = `background-card level-${airQuality.level}`;
-
-                const detailCard = document.createElement('div');
-                detailCard.className = `detail-card level-${airQuality.level}`;
-
-                const icon = document.createElement('img');
-                icon.src = airQuality.icon;
-
-                const content = document.createElement('div');
-                content.className = 'card-content';
-                content.innerHTML = `
-                    <h2>${province}</h2>
-                    <div class="air-quality">
-                        <span>PM 2.5: ${pm25Data.data.aqi}</span>
-                        <span class="air-quality-level level-${airQuality.level}">${airQuality.text}</span>
-                    </div>
-                    <div class="weather-info">
-                        <div>
-                            <i class="bi bi-cloud"></i>
-                            <span>${weatherData.weather[0].description}</span>
-                        </div>
-                        <div>
-                            <i class="bi bi-thermometer-half"></i>
-                            <span>${weatherData.main.temp}°C</span>
-                        </div>
-                        <div>
-                            <i class="bi bi-droplet-half"></i>
-                            <span>${weatherData.main.humidity}%</span>
-                        </div>
-                    </div>
-                `;
-
-                detailCard.appendChild(icon);
-                detailCard.appendChild(content);
-
-                const cardWrapper = document.createElement('div');
-                cardWrapper.className = 'card-wrapper';
-                cardWrapper.appendChild(backgroundCard);
-                cardWrapper.appendChild(detailCard);
-
-                resultsDiv.appendChild(cardWrapper);
-
-            } catch (error) {
-                console.error('Error:', error);
-                resultsDiv.textContent = 'ไม่สามารถดึงข้อมูลได้';
-            }
-        }
-
-        function getAirQualityLevel(aqi) {
-            if (aqi <= 25) return { level: 1, text: 'อากาศดี๊ดี', icon: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png' };
-            if (aqi <= 50) return { level: 2, text: 'อากาศดี', icon: 'https://img2.pic.in.th/pic/-42_20250123204517.png' };
-            if (aqi <= 100) return { level: 3, text: 'อยู่ในระดับปานกลาง', icon: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png' };
-            if (aqi <= 200) return { level: 4, text: 'เริ่มมีผลกระทบ', icon: 'https://img2.pic.in.th/pic/-41-1da832b063b77fea9.png' };
-            return { level: 5, text: 'มีผลกระทบต่อสุขภาพ', icon: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png' };
-        }
-
-        async function fetchHistoricalData() {
-            const day = document.getElementById('day-picker').value;
-            const month = document.getElementById('month-picker').value;
-            const year = document.getElementById('year-picker').value;
-
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = 'กำลังโหลดข้อมูลย้อนหลัง...';
-
-            try {
-                const historicalResponse = await fetch(`https://api.waqi.info/feed/${year}-${month}-${day}/?token=${pm25ApiKey}`);
-                const historicalData = await historicalResponse.json();
-
-                if (historicalData.status === 'ok') {
-                    resultsDiv.innerHTML = `<h3>ข้อมูล PM 2.5 วันที่ ${day}/${month}/${year}</h3>`;
-                    resultsDiv.innerHTML += `<p>PM 2.5: ${historicalData.data.aqi}</p>`;
-                } else {
-                    resultsDiv.innerHTML = 'ไม่พบข้อมูลในวันที่เลือก';
-                }
-            } catch (error) {
-                console.error('Error fetching historical data:', error);
-                resultsDiv.textContent = 'ไม่สามารถดึงข้อมูลย้อนหลังได้';
-            }
-        }
-
-        populateDatePickers();
-    </script>
+    function getWeatherIcon(main) {
+      if (main === "Clear") return "sun";
+      if (main === "Clouds") return "cloud";
+      if (main === "Rain") return "cloud-showers-heavy";
+      if (main === "Thunderstorm") return "bolt";
+      if (main === "Snow") return "snowflake";
+      return "smog";
+    }
+  </script>
 </body>
 </html>
