@@ -11,15 +11,15 @@
       font-family: "Poppins", Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #ffffff; /* สีพื้นหลังเว็บไซต์ */
+      background: #ffffff; /* พื้นหลังเว็บไซต์ */
       color: #333;
     }
     header {
-      background: linear-gradient(135deg, #32CD32, #FFA500, #FFFF00); /* เขียว-ส้ม-เหลือง */
+      background: #228B22; /* สีเขียวเข้ม */
       color: white;
       padding: 20px;
       text-align: center;
-      border-radius: 0 0 30px 30px;
+      border-radius: 0 0 20px 20px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
     header h1 {
@@ -40,7 +40,7 @@
       padding: 15px;
       text-align: center;
       font-size: 1.2em;
-      background: linear-gradient(135deg, #32CD32, #FFA500, #FFFF00); /* เขียว-ส้ม-เหลือง */
+      background: #228B22; /* สีเขียวเข้ม */
       color: white;
       border-radius: 10px 10px 0 0;
     }
@@ -49,26 +49,22 @@
       text-align: center;
       border-radius: 10px;
       font-size: 1em;
-      color: #333;
+      color: white;
     }
     .level-good {
-      background: #90EE90; /* เขียวอ่อน */
+      background: #008000; /* สีเขียว */
     }
     .level-moderate {
-      background: #87CEEB; /* ฟ้า */
-      color: white;
+      background: #4682B4; /* สีน้ำเงิน */
     }
     .level-unhealthy-sensitive {
-      background: #FFA500; /* ส้ม */
-      color: white;
+      background: #FF8C00; /* สีส้ม */
     }
     .level-unhealthy {
-      background: #FF6347; /* แดงอ่อน */
-      color: white;
+      background: #FF4500; /* สีแดง */
     }
     .level-very-unhealthy {
-      background: #8B008B; /* ม่วงเข้ม */
-      color: white;
+      background: #800080; /* สีม่วง */
     }
     footer {
       text-align: center;
@@ -76,7 +72,7 @@
       background: #333;
       color: white;
       margin-top: 20px;
-      border-radius: 30px 30px 0 0;
+      border-radius: 20px 20px 0 0;
     }
     footer p {
       margin: 0;
@@ -110,21 +106,8 @@
 
   <script>
     const provinces = [
-      "กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น",
-      "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร",
-      "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก",
-      "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี",
-      "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์",
-      "ปราจีนบุรี", "ปัตตานี", "พะเยา", "พังงา", "พัทลุง", "พิจิตร",
-      "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม",
-      "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง",
-      "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย",
-      "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม",
-      "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี",
-      "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ",
-      "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี", "อื่นๆ"
-    ];
-
+      "กรุงเทพมหานคร", "เชียงใหม่", "ขอนแก่น", "ภูเก็ต", "นครราชสีมา", "สุรินทร์", "ระยอง"
+    ]; // ตัวอย่างจังหวัด
     const apiKey = "41c1aef7e4e507e010fb4e2705e6f0b6";
     const tableBody = document.getElementById("pm-table");
     const updateTime = document.getElementById("update-time");
@@ -136,12 +119,8 @@
 
       for (const province of provinces) {
         try {
-          const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/air_pollution?lat=13.7563&lon=100.5018&appid=${apiKey}`
-          );
-          const data = await response.json();
-
-          const pm25 = data.list[0].components.pm2_5;
+          // ตัวอย่างข้อมูลแบบสมมุติ (กำหนด PM 2.5 โดยไม่ดึงข้อมูลจริง)
+          const pm25 = Math.floor(Math.random() * 300); // สุ่มค่า PM 2.5
           const level = getPmLevel(pm25);
 
           const row = `
@@ -165,7 +144,7 @@
     function getPmLevel(pm25) {
       if (pm25 <= 50) return { label: "ดี", class: "level-good" };
       if (pm25 <= 100) return { label: "ปานกลาง", class: "level-moderate" };
-      if (pm25 <= 150) return { label: "มีผลกระทบต่อบางคน", class: "level-unhealthy-sensitive" };
+      if (pm25 <= 150) return { label: "เริ่มมีผลกระทบ", class: "level-unhealthy-sensitive" };
       if (pm25 <= 200) return { label: "อันตราย", class: "level-unhealthy" };
       return { label: "อันตรายมาก", class: "level-very-unhealthy" };
     }
