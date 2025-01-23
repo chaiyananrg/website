@@ -41,52 +41,87 @@
             font-size: 20px;
         }
 
-        .card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            color: white;
-            background-size: cover;
+        .card-wrapper {
+            position: relative;
+            width: 1080px;
+            margin: 0 auto;
         }
 
-        .card.level-1 {
+        .background-card {
+            width: 100%;
+            height: 400px; /* ปรับขนาดความสูงตามต้องการ */
+            background-size: cover;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .background-card.level-1 {
             background-image: url('https://img5.pic.in.th/file/secure-sv1/1_20250123_212100_0000.png');
         }
 
-        .card.level-2 {
+        .background-card.level-2 {
             background-image: url('https://img5.pic.in.th/file/secure-sv1/2_20250123_212100_0001.png');
         }
 
-        .card.level-3 {
+        .background-card.level-3 {
             background-image: url('https://img2.pic.in.th/pic/3_20250123_212100_0002.png');
         }
 
-        .card.level-4 {
+        .background-card.level-4 {
             background-image: url('https://img2.pic.in.th/pic/4_20250123_212100_0003.png');
         }
 
-        .card.level-5 {
+        .background-card.level-5 {
             background-image: url('https://img5.pic.in.th/file/secure-sv1/5_20250123_212100_0004.png');
         }
 
-        .card img {
-            width: 100px;
-            height: 100px;
+        .detail-card {
+            position: absolute;
+            top: 20px; /* ปรับตำแหน่งตามต้องการ */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%; /* ปรับขนาดตามต้องการ */
+            background-color: rgba(255, 255, 255, 0.9); /* สีพื้นหลังและความโปร่งแสง */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .detail-card.level-1 {
+            background-color: #0000ff; /* สีฟ้า */
+        }
+
+        .detail-card.level-2 {
+            background-color: #00ff00; /* สีเขียว */
+        }
+
+        .detail-card.level-3 {
+            background-color: #ffff00; /* สีเหลือง */
+        }
+
+        .detail-card.level-4 {
+            background-color: #ffa500; /* สีส้ม */
+        }
+
+        .detail-card.level-5 {
+            background-color: #ff0000; /* สีแดง */
         }
 
         .card-content {
-            flex: 1;
-            margin-left: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-content img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
         }
 
         .air-quality {
             display: flex;
             align-items: center;
-            justify-content: center;
         }
 
         .air-quality span {
@@ -165,9 +200,13 @@
 
                 const airQuality = getAirQualityLevel(pm25Data.data.aqi);
 
-                // สร้างบัตรข้อมูล
-                const card = document.createElement('div');
-                card.className = `card level-${airQuality.level}`;
+                // สร้างการ์ดรูปภาพพื้นหลัง
+                const backgroundCard = document.createElement('div');
+                backgroundCard.className = `background-card level-${airQuality.level}`;
+
+                // สร้างการ์ดสำหรับแสดงรายละเอียด
+                const detailCard = document.createElement('div');
+                detailCard.className = `detail-card level-${airQuality.level}`;
 
                 const icon = document.createElement('img');
                 icon.src = icons[airQuality.level]; // ใช้ไอคอนตามระดับ
@@ -196,9 +235,16 @@
                     </div>
                 `;
 
-                card.appendChild(icon);
-                card.appendChild(content);
-                resultsDiv.appendChild(card);
+                detailCard.appendChild(icon);
+                detailCard.appendChild(content);
+
+                // สร้าง wrapper สำหรับการ์ดทั้งสอง
+                const cardWrapper = document.createElement('div');
+                cardWrapper.className = 'card-wrapper';
+                cardWrapper.appendChild(backgroundCard);
+                cardWrapper.appendChild(detailCard);
+
+                resultsDiv.appendChild(cardWrapper);
 
                 // ข้อมูลย้อนหลัง
                 const historicalData = document.createElement('div');
