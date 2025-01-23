@@ -43,7 +43,7 @@
 
         .card {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
             border: 1px solid #ccc;
             border-radius: 10px;
@@ -58,19 +58,15 @@
         }
 
         .card-content {
-            text-align: left;
+            text-align: center;
             width: 100%;
-            margin-left: 20px;
-        }
-
-        .historical-data {
             margin-top: 20px;
-            text-align: left;
         }
 
         .air-quality {
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
         .air-quality-level {
@@ -96,6 +92,24 @@
 
         .level-5 {
             color: #ff0000; /* สีแดง */
+        }
+
+        .weather-info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .weather-info div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .weather-info i {
+            font-size: 2em;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -164,12 +178,23 @@
                 content.innerHTML = `
                     <h2>${province}</h2>
                     <div class="air-quality">
-                        <span>PM 2.5: ${pm25Data.data.aqi}</span>
+                        <span style="font-size: 2em;">PM 2.5: ${pm25Data.data.aqi}</span>
                         <span class="air-quality-level level-${airQuality.level}">${airQuality.text}</span>
                     </div>
-                    <p>สภาพอากาศ: ${weatherData.weather[0].description}</p>
-                    <p>อุณหภูมิ: ${weatherData.main.temp}°C</p>
-                    <p>ความชื้น: ${weatherData.main.humidity}%</p>
+                    <div class="weather-info">
+                        <div>
+                            <i class="bi bi-cloud"></i>
+                            <span>${weatherData.weather[0].description}</span>
+                        </div>
+                        <div>
+                            <i class="bi bi-thermometer-half"></i>
+                            <span>${weatherData.main.temp}°C</span>
+                        </div>
+                        <div>
+                            <i class="bi bi-droplet-half"></i>
+                            <span>${weatherData.main.humidity}%</span>
+                        </div>
+                    </div>
                 `;
 
                 card.appendChild(icon);
