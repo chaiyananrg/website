@@ -1,155 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายงานค่าฝุ่น PM 2.5 - ทุกจังหวัด</title>
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body {
-      font-family: "Poppins", Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #ffffff; /* พื้นหลังเว็บไซต์ */
-      color: #333;
-    }
-    header {
-      background: #228B22; /* สีเขียวเข้ม */
-      color: white;
-      padding: 20px;
-      text-align: center;
-      border-radius: 0 0 20px 20px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    header h1 {
-      font-size: 2em;
-      margin: 0;
-    }
-    header p {
-      font-size: 1em;
-      margin: 5px 0 0;
-    }
-    table {
-      width: 90%;
-      margin: 20px auto;
-      border-collapse: separate;
-      border-spacing: 0 10px; /* ระยะห่างระหว่างแถว */
-    }
-    table th {
-      padding: 15px;
-      text-align: center;
-      font-size: 1.2em;
-      background: #228B22; /* สีเขียวเข้ม */
-      color: white;
-      border-radius: 10px 10px 0 0;
-    }
-    table td {
-      padding: 15px;
-      text-align: center;
-      border-radius: 10px;
-      font-size: 1em;
-      color: white;
-    }
-    .level-good {
-      background: #008000; /* สีเขียว */
-    }
-    .level-moderate {
-      background: #4682B4; /* สีน้ำเงิน */
-    }
-    .level-unhealthy-sensitive {
-      background: #FF8C00; /* สีส้ม */
-    }
-    .level-unhealthy {
-      background: #FF4500; /* สีแดง */
-    }
-    .level-very-unhealthy {
-      background: #800080; /* สีม่วง */
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #333;
-      color: white;
-      margin-top: 20px;
-      border-radius: 20px 20px 0 0;
-    }
-    footer p {
-      margin: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>รายงานผล PM 2.5 ทั่วประเทศไทย</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        #province-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .province-button {
+            border: none;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin: 5px;
+        }
+
+        .province-button img {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .card-content {
+            text-align: left;
+            width: 100%;
+            margin-left: 20px;
+        }
+
+        .historical-data {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>รายงานค่าฝุ่น PM 2.5</h1>
-    <p>อัปเดตล่าสุด: <span id="update-time"></span></p>
-  </header>
+    <h1>รายงานผล PM 2.5 ทั่วประเทศไทย</h1>
+    <div id="province-buttons">
+        <!-- ปุ่มจังหวัด -->
+        <button class="province-button" onclick="fetchData('Bangkok')">
+            <img src="bangkok-icon.png" alt="Bangkok"> กรุงเทพมหานคร
+        </button>
+        <button class="province-button" onclick="fetchData('Chiang Mai')">
+            <img src="chiangmai-icon.png" alt="Chiang Mai"> เชียงใหม่
+        </button>
+        <button class="province-button" onclick="fetchData('Phuket')">
+            <img src="phuket-icon.png" alt="Phuket"> ภูเก็ต
+        </button>
+        <!-- เพิ่มจังหวัดตามต้องการ -->
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>จังหวัด</th>
-        <th>ค่า PM 2.5</th>
-        <th>ระดับความอันตราย</th>
-      </tr>
-    </thead>
-    <tbody id="pm-table">
-      <tr>
-        <td colspan="3">กำลังโหลดข้อมูล...</td>
-      </tr>
-    </tbody>
-  </table>
+    <div id="results"></div>
 
-  <footer>
-    <p>ข้อมูลจาก OpenWeatherMap API</p>
-  </footer>
+    <script>
+        const apiKey = '41c1aef7e4e507e010fb4e2705e6f0b6';
 
-  <script>
-    const provinces = [
-      "กรุงเทพมหานคร", "เชียงใหม่", "ขอนแก่น", "ภูเก็ต", "นครราชสีมา", "สุรินทร์", "ระยอง"
-    ]; // ตัวอย่างจังหวัด
-    const apiKey = "41c1aef7e4e507e010fb4e2705e6f0b6";
-    const tableBody = document.getElementById("pm-table");
-    const updateTime = document.getElementById("update-time");
+        async function fetchData(province) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
 
-    async function fetchAirQuality() {
-      tableBody.innerHTML = "";
-      const now = new Date();
-      updateTime.textContent = now.toLocaleString();
+            try {
+                // URL ของ API ที่ต้องการดึงข้อมูล PM 2.5 และสภาพอากาศ
+                const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${province},TH&appid=${apiKey}&units=metric`);
+                const weatherData = await weatherResponse.json();
 
-      for (const province of provinces) {
-        try {
-          // ตัวอย่างข้อมูลแบบสมมุติ (กำหนด PM 2.5 โดยไม่ดึงข้อมูลจริง)
-          const pm25 = Math.floor(Math.random() * 300); // สุ่มค่า PM 2.5
-          const level = getPmLevel(pm25);
+                const pm25Response = await fetch(`https://api.example.com/pm25?province=${province}`);
+                const pm25Data = await pm25Response.json();
 
-          const row = `
-            <tr class="${level.class}">
-              <td>${province}</td>
-              <td>${pm25}</td>
-              <td>${level.label}</td>
-            </tr>
-          `;
-          tableBody.innerHTML += row;
-        } catch (error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'เกิดข้อผิดพลาด',
-            text: `ไม่สามารถโหลดข้อมูลของ ${province} ได้`,
-          });
+                // สร้างบัตรข้อมูล
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const icon = document.createElement('img');
+                icon.src = pm25Data.pm25 > 100 ? 'mask-icon.png' : `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`; // เปลี่ยนตามสภาพอากาศ
+
+                const content = document.createElement('div');
+                content.className = 'card-content';
+                content.innerHTML = `
+                    <h2>${province}</h2>
+                    <p>PM 2.5: ${pm25Data.pm25}</p>
+                    <p>สภาพอากาศ: ${weatherData.weather[0].description}</p>
+                    <p>อุณหภูมิ: ${weatherData.main.temp}°C</p>
+                    <p>ความชื้น: ${weatherData.main.humidity}%</p>
+                `;
+
+                card.appendChild(icon);
+                card.appendChild(content);
+                resultsDiv.appendChild(card);
+
+                // ข้อมูลย้อนหลัง
+                const historicalData = document.createElement('div');
+                historicalData.className = 'historical-data';
+                historicalData.innerHTML = '<h3>ข้อมูลย้อนหลัง</h3>';
+                pm25Data.history.forEach(record => {
+                    const historyItem = document.createElement('p');
+                    historyItem.textContent = `วันที่ ${record.date}: PM 2.5 - ${record.pm25}`;
+                    historicalData.appendChild(historyItem);
+                });
+                resultsDiv.appendChild(historicalData);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                resultsDiv.textContent = 'ไม่สามารถดึงข้อมูลได้';
+            }
         }
-      }
-    }
 
-    function getPmLevel(pm25) {
-      if (pm25 <= 50) return { label: "ดี", class: "level-good" };
-      if (pm25 <= 100) return { label: "ปานกลาง", class: "level-moderate" };
-      if (pm25 <= 150) return { label: "เริ่มมีผลกระทบ", class: "level-unhealthy-sensitive" };
-      if (pm25 <= 200) return { label: "อันตราย", class: "level-unhealthy" };
-      return { label: "อันตรายมาก", class: "level-very-unhealthy" };
-    }
-
-    fetchAirQuality();
-  </script>
+        // ตั้งค่าให้ดึงข้อมูลทุกๆ 1 ชั่วโมง (3600000 milliseconds)
+        setInterval(() => {
+            const province = document.querySelector('.province-button.selected')?.getAttribute('data-province');
+            if (province) fetchData(province);
+        }, 3600000);
+    </script>
 </body>
 </html>
