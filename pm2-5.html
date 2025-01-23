@@ -79,18 +79,20 @@
     <div id="results"></div>
 
     <script>
-        const apiKey = '41c1aef7e4e507e010fb4e2705e6f0b6';
+        const weatherApiKey = '41c1aef7e4e507e010fb4e2705e6f0b6';
+        const pm25ApiKey = '4cfc1671f195ae9830197e593a3eb4bb17beea4b';
 
         async function fetchData(province) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
 
             try {
-                // URL ของ API ที่ต้องการดึงข้อมูล PM 2.5 และสภาพอากาศ
-                const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${province},TH&appid=${apiKey}&units=metric`);
+                // URL ของ API ที่ต้องการดึงข้อมูลสภาพอากาศ
+                const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${province},TH&appid=${weatherApiKey}&units=metric`);
                 const weatherData = await weatherResponse.json();
 
-                const pm25Response = await fetch(`https://api.example.com/pm25?province=${province}`);
+                // URL ของ API ที่ต้องการดึงข้อมูล PM 2.5
+                const pm25Response = await fetch(`https://api.waqi.info/feed/${province}/?token=${pm25ApiKey}`);
                 const pm25Data = await pm25Response.json();
 
                 // สร้างบัตรข้อมูล
@@ -98,13 +100,13 @@
                 card.className = 'card';
 
                 const icon = document.createElement('img');
-                icon.src = pm25Data.pm25 > 100 ? 'mask-icon.png' : `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`; // เปลี่ยนตามสภาพอากาศ
+                icon.src = pm25Data.data.aqi > 100 ? 'mask-icon.png' : `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`; // เปลี่ยนตามสภาพอากาศ
 
                 const content = document.createElement('div');
                 content.className = 'card-content';
                 content.innerHTML = `
                     <h2>${province}</h2>
-                    <p>PM 2.5: ${pm25Data.pm25}</p>
+                    <p>PM 2.5: ${pm25Data.data.aqi}</p>
                     <p>สภาพอากาศ: ${weatherData.weather[0].description}</p>
                     <p>อุณหภูมิ: ${weatherData.main.temp}°C</p>
                     <p>ความชื้น: ${weatherData.main.humidity}%</p>
@@ -118,9 +120,9 @@
                 const historicalData = document.createElement('div');
                 historicalData.className = 'historical-data';
                 historicalData.innerHTML = '<h3>ข้อมูลย้อนหลัง</h3>';
-                pm25Data.history.forEach(record => {
+                pm25Data.data.forecast.daily.pm25.forEach(record => {
                     const historyItem = document.createElement('p');
-                    historyItem.textContent = `วันที่ ${record.date}: PM 2.5 - ${record.pm25}`;
+                    historyItem.textContent = `วันที่ ${record.day}: PM 2.5 - ${record.avg}`;
                     historicalData.appendChild(historyItem);
                 });
                 resultsDiv.appendChild(historicalData);
