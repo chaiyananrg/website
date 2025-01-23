@@ -43,13 +43,16 @@
 
         .card {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             border: 1px solid #ccc;
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
             background-color: white;
+            text-align: left;
+            background-size: cover;
+            color: white;
         }
 
         .card img {
@@ -58,9 +61,8 @@
         }
 
         .card-content {
-            text-align: center;
-            width: 100%;
-            margin-top: 20px;
+            flex: 1;
+            margin-left: 20px;
         }
 
         .air-quality {
@@ -69,29 +71,33 @@
             justify-content: center;
         }
 
+        .air-quality span {
+            font-size: 2em;
+        }
+
         .air-quality-level {
             margin-left: 10px;
             font-weight: bold;
         }
 
         .level-1 {
-            color: #0000ff; /* สีฟ้า */
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/1_20250123_212100_0000.png');
         }
 
         .level-2 {
-            color: #00ff00; /* สีเขียว */
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/2_20250123_212100_0001.png');
         }
 
         .level-3 {
-            color: #ffff00; /* สีเหลือง */
+            background-image: url('https://img2.pic.in.th/pic/3_20250123_212100_0002.png');
         }
 
         .level-4 {
-            color: #ffa500; /* สีส้ม */
+            background-image: url('https://img2.pic.in.th/pic/4_20250123_212100_0003.png');
         }
 
         .level-5 {
-            color: #ff0000; /* สีแดง */
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/5_20250123_212100_0004.png');
         }
 
         .weather-info {
@@ -136,11 +142,11 @@
         const pm25ApiKey = '4cfc1671f195ae9830197e593a3eb4bb17beea4b';
 
         const icons = {
-            1: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png',
-            2: 'https://img2.pic.in.th/pic/-410f208aa4c95c2d94.png',
-            3: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png',
-            4: 'https://img2.pic.in.th/pic/-42_20250123204517.png',
-            5: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png'
+            1: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png', // สีแดง
+            2: 'https://img2.pic.in.th/pic/-42_20250123204517.png', // สีส้ม
+            3: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png', // สีเหลือง
+            4: 'https://img2.pic.in.th/pic/-410f208aa4c95c2d94.png', // สีเขียว
+            5: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png' // สีฟ้า
         };
 
         function getAirQualityLevel(aqi) {
@@ -168,7 +174,7 @@
 
                 // สร้างบัตรข้อมูล
                 const card = document.createElement('div');
-                card.className = 'card';
+                card.className = `card level-${airQuality.level}`;
 
                 const icon = document.createElement('img');
                 icon.src = icons[airQuality.level]; // ใช้ไอคอนตามระดับ
@@ -178,7 +184,7 @@
                 content.innerHTML = `
                     <h2>${province}</h2>
                     <div class="air-quality">
-                        <span style="font-size: 2em;">PM 2.5: ${pm25Data.data.aqi}</span>
+                        <span>PM 2.5: ${pm25Data.data.aqi}</span>
                         <span class="air-quality-level level-${airQuality.level}">${airQuality.text}</span>
                     </div>
                     <div class="weather-info">
