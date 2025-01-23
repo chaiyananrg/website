@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ตรวจสอบสภาพอากาศและ PM 2.5</title>
+  <title>รายงานคุณภาพอากาศและสภาพอากาศ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
@@ -23,149 +23,155 @@
     header h1 {
       margin: 0;
     }
-    #province-list {
-      max-width: 600px;
-      margin: 20px auto;
-      text-align: center;
-    }
-    .btn-province {
-      display: inline-block;
-      background: #32CD32;
-      color: white;
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1.1em;
-      transition: all 0.3s ease;
-    }
-    .btn-province:hover {
-      background: #228B22;
-    }
-    #weather-info {
+    .container {
       max-width: 800px;
       margin: 20px auto;
       padding: 20px;
+    }
+    .card {
       background: white;
-      border-radius: 10px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    #weather-info h2 {
-      text-align: center;
+      border-radius: 20px;
+      overflow: hidden;
       margin-bottom: 20px;
-    }
-    .weather-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .weather-item span {
-      font-size: 1.1em;
-    }
-    .weather-icon {
-      font-size: 2em;
-    }
-    .pm-status {
-      padding: 15px;
-      border-radius: 10px;
       text-align: center;
-      color: white;
-      margin-bottom: 20px;
+      position: relative;
     }
-    .level-good { background: #32CD32; }
-    .level-moderate { background: #87CEEB; }
-    .level-unhealthy-sensitive { background: #FFA500; }
-    .level-unhealthy { background: #FF6347; }
-    .level-very-unhealthy { background: #8B008B; }
-    footer {
-      text-align: center;
+    .card .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.2;
+      z-index: 0;
+    }
+    .card-content {
+      position: relative;
+      z-index: 1;
       padding: 20px;
-      background: #333;
-      color: white;
-      margin-top: 20px;
+    }
+    .card img {
+      width: 80px;
+      margin: 10px 0;
+    }
+    .card h2 {
+      margin: 10px 0;
+    }
+    .card p {
+      margin: 5px 0;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>ตรวจสอบ PM 2.5 และสภาพอากาศ</h1>
+    <h1>รายงานคุณภาพอากาศและสภาพอากาศ</h1>
   </header>
 
-  <div id="province-list">
-    <button class="btn-province" onclick="fetchWeather('กรุงเทพมหานคร')">กรุงเทพมหานคร</button>
-    <button class="btn-province" onclick="fetchWeather('เชียงใหม่')">เชียงใหม่</button>
-    <button class="btn-province" onclick="fetchWeather('ภูเก็ต')">ภูเก็ต</button>
-    <!-- เพิ่มปุ่มจังหวัดอื่นๆ -->
-  </div>
+  <div class="container">
+    <!-- บัตรคุณภาพอากาศ -->
+    <div id="air-quality-card" class="card">
+      <div class="background" id="aqi-background"></div>
+      <div class="card-content">
+        <h2>คุณภาพอากาศ (PM 2.5)</h2>
+        <img id="aqi-icon" src="" alt="ระดับคุณภาพอากาศ">
+        <p id="aqi-status">กำลังโหลด...</p>
+        <p id="aqi-value">-</p>
+      </div>
+    </div>
 
-  <div id="weather-info" style="display: none;">
-    <h2>ข้อมูลจังหวัด <span id="province-name"></span></h2>
-    <div id="pm-info" class="pm-status">กำลังโหลดข้อมูล PM 2.5...</div>
-    <div class="weather-item">
-      <span>อุณหภูมิ:</span>
-      <span id="temperature">-</span>
-    </div>
-    <div class="weather-item">
-      <span>ความชื้น:</span>
-      <span id="humidity">-</span>
-    </div>
-    <div class="weather-item">
-      <span>สภาพอากาศ:</span>
-      <span id="weather-desc">-</span> <i id="weather-icon" class="weather-icon"></i>
+    <!-- บัตรสภาพอากาศ -->
+    <div id="weather-card" class="card">
+      <div class="card-content">
+        <h2>สภาพอากาศ</h2>
+        <img id="weather-icon" src="" alt="สภาพอากาศ">
+        <p id="weather-desc">กำลังโหลด...</p>
+        <p id="temperature">-</p>
+        <p id="humidity">-</p>
+      </div>
     </div>
   </div>
-
-  <footer>
-    <p>ข้อมูลจาก OpenWeatherMap API</p>
-  </footer>
 
   <script>
     const apiKey = "41c1aef7e4e507e010fb4e2705e6f0b6";
 
-    async function fetchWeather(province) {
-      document.getElementById("weather-info").style.display = "block";
-      document.getElementById("province-name").textContent = province;
-
+    async function fetchData() {
       try {
-        // ตัวอย่างพิกัด lat/lon (อาจต้องเปลี่ยนสำหรับจังหวัดอื่น)
-        const lat = province === "กรุงเทพมหานคร" ? 13.7563 : province === "เชียงใหม่" ? 18.7883 : 7.8804;
-        const lon = province === "กรุงเทพมหานคร" ? 100.5018 : province === "เชียงใหม่" ? 98.9853 : 98.3923;
+        const lat = 13.7563; // ตัวอย่างพิกัด (กรุงเทพฯ)
+        const lon = 100.5018;
 
         const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
         const data = await response.json();
 
-        const pm25 = Math.floor(Math.random() * 300); // ตัวอย่าง PM 2.5
-        const level = getPmLevel(pm25);
-
-        document.getElementById("pm-info").textContent = `ค่า PM 2.5: ${pm25} - ${level.label}`;
-        document.getElementById("pm-info").className = `pm-status ${level.class}`;
-        document.getElementById("temperature").textContent = `${data.main.temp}°C`;
-        document.getElementById("humidity").textContent = `${data.main.humidity}%`;
-        document.getElementById("weather-desc").textContent = data.weather[0].description;
-        document.getElementById("weather-icon").className = `fas fa-${getWeatherIcon(data.weather[0].main)}`;
+        const aqi = Math.floor(Math.random() * 100); // ตัวอย่างค่า AQI (สุ่ม)
+        updateAirQualityCard(aqi);
+        updateWeatherCard(data);
       } catch (error) {
-        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+        console.error("เกิดข้อผิดพลาด:", error);
+        alert("ไม่สามารถโหลดข้อมูลได้");
       }
     }
 
-    function getPmLevel(pm25) {
-      if (pm25 <= 50) return { label: "ดี", class: "level-good" };
-      if (pm25 <= 100) return { label: "ปานกลาง", class: "level-moderate" };
-      if (pm25 <= 150) return { label: "เริ่มมีผลกระทบ", class: "level-unhealthy-sensitive" };
-      if (pm25 <= 200) return { label: "อันตราย", class: "level-unhealthy" };
-      return { label: "อันตรายมาก", class: "level-very-unhealthy" };
+    function updateAirQualityCard(aqi) {
+      const aqiIcon = document.getElementById("aqi-icon");
+      const aqiStatus = document.getElementById("aqi-status");
+      const aqiValue = document.getElementById("aqi-value");
+      const aqiBackground = document.getElementById("aqi-background");
+
+      let level = {};
+      if (aqi <= 25) {
+        level = {
+          status: "อากาศดี๊ดี",
+          icon: "https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png",
+          background: "https://img5.pic.in.th/file/secure-sv1/2_20250124_023728_0000.png"
+        };
+      } else if (aqi <= 37) {
+        level = {
+          status: "อากาศดี",
+          icon: "https://img2.pic.in.th/pic/-42_20250123204517.png",
+          background: "https://img2.pic.in.th/pic/3_20250124_023728_0001.png"
+        };
+      } else if (aqi <= 50) {
+        level = {
+          status: "อยู่ในระดับปานกลาง",
+          icon: "https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png",
+          background: "https://img2.pic.in.th/pic/4_20250124_023728_0002.png"
+        };
+      } else if (aqi <= 90) {
+        level = {
+          status: "เริ่มมีผลกระทบ",
+          icon: "https://img2.pic.in.th/pic/-41-1da832b063b77fea9.png",
+          background: "https://img5.pic.in.th/file/secure-sv1/5_20250124_023728_0003.png"
+        };
+      } else {
+        level = {
+          status: "มีผลกระทบต่อสุขภาพ",
+          icon: "https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png",
+          background: "https://img5.pic.in.th/file/secure-sv1/6_20250124_023728_0004.png"
+        };
+      }
+
+      aqiIcon.src = level.icon;
+      aqiStatus.textContent = level.status;
+      aqiValue.textContent = `AQI: ${aqi}`;
+      aqiBackground.style.backgroundImage = `url(${level.background})`;
+      aqiBackground.style.backgroundSize = "cover";
     }
 
-    function getWeatherIcon(main) {
-      if (main === "Clear") return "sun";
-      if (main === "Clouds") return "cloud";
-      if (main === "Rain") return "cloud-showers-heavy";
-      if (main === "Thunderstorm") return "bolt";
-      if (main === "Snow") return "snowflake";
-      return "smog";
+    function updateWeatherCard(data) {
+      const weatherIcon = document.getElementById("weather-icon");
+      const weatherDesc = document.getElementById("weather-desc");
+      const temperature = document.getElementById("temperature");
+      const humidity = document.getElementById("humidity");
+
+      const iconCode = data.weather[0].icon;
+      weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+      weatherDesc.textContent = data.weather[0].description;
+      temperature.textContent = `อุณหภูมิ: ${data.main.temp}°C`;
+      humidity.textContent = `ความชื้น: ${data.main.humidity}%`;
     }
+
+    fetchData();
+    setInterval(fetchData, 3600000); // อัปเดตทุก 1 ชั่วโมง
   </script>
 </body>
 </html>
