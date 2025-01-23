@@ -3,34 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>รายงานผล PM 2.5 ทั่วประเทศไทย</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 50px;
+            background-color: #f4f4f4;
         }
 
         #province-buttons {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            margin-bottom: 30px;
         }
 
         .province-button {
             border: none;
-            background-color: #f0f0f0;
+            background-color: #007bff;
+            color: white;
             border-radius: 20px;
             padding: 10px 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             margin: 5px;
+            transition: background-color 0.3s;
         }
 
-        .province-button img {
+        .province-button:hover {
+            background-color: #0056b3;
+        }
+
+        .province-button i {
             margin-right: 10px;
-            width: 20px;
-            height: 20px;
+            font-size: 20px;
         }
 
         .card {
@@ -41,6 +49,7 @@
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
+            background-color: white;
         }
 
         .card img {
@@ -58,6 +67,36 @@
             margin-top: 20px;
             text-align: left;
         }
+
+        .air-quality {
+            display: flex;
+            align-items: center;
+        }
+
+        .air-quality-level {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .level-1 {
+            color: #0000ff; /* สีฟ้า */
+        }
+
+        .level-2 {
+            color: #00ff00; /* สีเขียว */
+        }
+
+        .level-3 {
+            color: #ffff00; /* สีเหลือง */
+        }
+
+        .level-4 {
+            color: #ffa500; /* สีส้ม */
+        }
+
+        .level-5 {
+            color: #ff0000; /* สีแดง */
+        }
     </style>
 </head>
 <body>
@@ -65,13 +104,13 @@
     <div id="province-buttons">
         <!-- ปุ่มจังหวัด -->
         <button class="province-button" onclick="fetchData('Bangkok')">
-            <img src="bangkok-icon.png" alt="Bangkok"> กรุงเทพมหานคร
+            <i class="bi bi-building"></i> กรุงเทพมหานคร
         </button>
         <button class="province-button" onclick="fetchData('Chiang Mai')">
-            <img src="chiangmai-icon.png" alt="Chiang Mai"> เชียงใหม่
+            <i class="bi bi-tree"></i> เชียงใหม่
         </button>
         <button class="province-button" onclick="fetchData('Phuket')">
-            <img src="phuket-icon.png" alt="Phuket"> ภูเก็ต
+            <i class="bi bi-house"></i> ภูเก็ต
         </button>
         <!-- เพิ่มจังหวัดตามต้องการ -->
     </div>
@@ -81,6 +120,22 @@
     <script>
         const weatherApiKey = '41c1aef7e4e507e010fb4e2705e6f0b6';
         const pm25ApiKey = '4cfc1671f195ae9830197e593a3eb4bb17beea4b';
+
+        const icons = {
+            1: 'https://img5.pic.in.th/file/secure-sv1/-396d59ea15e2bef3e3.png',
+            2: 'https://img2.pic.in.th/pic/-410f208aa4c95c2d94.png',
+            3: 'https://img5.pic.in.th/file/secure-sv1/-402322ccd2b07002f8.png',
+            4: 'https://img2.pic.in.th/pic/-42_20250123204517.png',
+            5: 'https://img5.pic.in.th/file/secure-sv1/-43_20250123204411.png'
+        };
+
+        function getAirQualityLevel(aqi) {
+            if (aqi <= 25) return { level: 1, text: 'อากาศดี๊ดี' };
+            if (aqi <= 50) return { level: 2, text: 'อากาศดี' };
+            if (aqi <= 100) return { level: 3, text: 'อยู่ในระดับปานกลาง' };
+            if (aqi <= 200) return { level: 4, text: 'เริ่มมีผลกระทบ' };
+            return { level: 5, text: 'มีผลกระทบต่อสุขภาพ' };
+        }
 
         async function fetchData(province) {
             const resultsDiv = document.getElementById('results');
@@ -95,18 +150,23 @@
                 const pm25Response = await fetch(`https://api.waqi.info/feed/${province}/?token=${pm25ApiKey}`);
                 const pm25Data = await pm25Response.json();
 
+                const airQuality = getAirQualityLevel(pm25Data.data.aqi);
+
                 // สร้างบัตรข้อมูล
                 const card = document.createElement('div');
                 card.className = 'card';
 
                 const icon = document.createElement('img');
-                icon.src = pm25Data.data.aqi > 100 ? 'mask-icon.png' : `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`; // เปลี่ยนตามสภาพอากาศ
+                icon.src = icons[airQuality.level]; // ใช้ไอคอนตามระดับ
 
                 const content = document.createElement('div');
                 content.className = 'card-content';
                 content.innerHTML = `
                     <h2>${province}</h2>
-                    <p>PM 2.5: ${pm25Data.data.aqi}</p>
+                    <div class="air-quality">
+                        <span>PM 2.5: ${pm25Data.data.aqi}</span>
+                        <span class="air-quality-level level-${airQuality.level}">${airQuality.text}</span>
+                    </div>
                     <p>สภาพอากาศ: ${weatherData.weather[0].description}</p>
                     <p>อุณหภูมิ: ${weatherData.main.temp}°C</p>
                     <p>ความชื้น: ${weatherData.main.humidity}%</p>
