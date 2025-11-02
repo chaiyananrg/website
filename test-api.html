@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องมือทดสอบ API อย่างง่าย</title>
+    <!-- โหลด Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* กำหนดฟอนต์ Inter สำหรับความสวยงาม */
+        body { font-family: 'Inter', sans-serif; }
+        /* สไตล์สำหรับกล่องแสดงผล JSON */
+        .json-viewer {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.875rem;
+        }
+    </style>
+    <script>
+        // ฟังก์ชันสำหรับส่ง HTTP Request
+        async function sendRequest() {
+            const url = document.getElementById('api-url').value;
+            const method = document.getElementById('api-method').value;
+            const bodyContent = document.getElementById('request-body').value;
+            const resultDiv = document.getElementById('result-content');
+            const statusSpan = document.getElementById('status-code');
+            const statusBox = document.getElementById('status-box');
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            // ล้างผลลัพธ์เก่า
+            resultDiv.innerHTML = 'กำลังรอการตอบกลับ...';
+            statusSpan.textContent = '';
+            statusBox.className = 'p-3 rounded-xl bg-gray-100 text-gray-700 w-full';
+            loadingIndicator.classList.remove('hidden');
+
+            if (!url) {
+                resultDiv.innerHTML = '<span class="text-red-500">กรุณาใส่ URL ของ API</span>';
+                statusBox.className = 'p-3 rounded-xl bg-red-100 text-red-700 w-full';
+                loadingIndicator.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const options = {
+                    method: method,
+                    headers: {} // เริ่มต้นด้วย Header ว่างเปล่า
+                };
+
+                // เพิ่ม Body สำหรับ POST/PUT และกำหนด Content-Type
+                if (method === 'POST' || method === 'PUT') {
+                    // ตรวจสอบความถูกต้องของ JSON ก่อนส่ง
+                    try {
+                        if (bodyContent) {
+                            options.body = bodyContent; // ส่งเป็น String ไปก่อน
+                            options.headers['Content-Type'] = 'application/json'; // กำหนด Header
+                        } else {
+                             // ถ้าเป็น POST/PUT แต่ไม่มี Body
+                             throw new Error("กรุณาใส่ Request Body สำหรับ method นี้");
+                        }
+                    } catch (e) {
+                        resultDiv.innerHTML = `<span class="text-red-500">JSON Body ไม่ถูกต้องหรือว่างเปล่า: ${e.message}</span>`;
+                        statusBox.className = 'p-3 rounded-xl bg-red-100 text-red-700 w-full';
+                        loadingIndicator.classList.add('hidden');
+                        return;
+                    }
+                }
+
+                // การเรียก API โดยใช้ fetch
+                const response = await fetch(url, options);
+
+                // แสดง Status Code
+                statusSpan.textContent = `สถานะ: ${response.status} ${response.statusText}`;
+                
+                // กำหนดสีตามสถานะ
+                if (response.status >= 200 && response.status < 300) {
+                    statusBox.className = 'p-3 rounded-xl bg-green-100 text-green-700 w-full';
+                } else if (response.status >= 400 && response.status < 600) {
+                    statusBox.className = 'p-3 rounded-xl bg-red-100 text-red-700 w-full';
+                } else {
+                    statusBox.className = 'p-3 rounded-xl bg-yellow-100 text-yellow-700 w-full';
+                }
+
+                // พยายามอ่าน Body เป็น JSON
+                let responseBody;
+                let contentType = response.headers.get('Content-Type');
+
+                if (contentType && contentType.includes('application/json')) {
+                    responseBody = await response.json();
+                    // จัดรูปแบบ JSON ให้อ่านง่าย
+                    resultDiv.textContent = JSON.stringify(responseBody, null, 2);
+                } else {
+                    // ถ้าไม่ใช่ JSON ให้อ่านเป็น Text
+                    responseBody = await response.text();
+                    resultDiv.textContent = responseBody;
+                }
+
+            } catch (error) {
+                // จัดการข้อผิดพลาดที่เกิดขึ้นในการเชื่อมต่อหรือ Fetch
+                statusSpan.textContent = 'สถานะ: Connection Error';
+                statusBox.className = 'p-3 rounded-xl bg-red-100 text-red-700 w-full';
+                // แสดงข้อความที่เกี่ยวข้องกับ CORS
+                let displayError = error.message;
+                if (error.message.includes('Failed to fetch')) {
+                    displayError = "Failed to fetch: อาจเป็นปัญหา CORS (เซิร์ฟเวอร์ปลายทางต้องอนุญาต) หรือปัญหาเครือข่าย";
+                }
+                resultDiv.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + displayError;
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // ฟังก์ชันสำหรับเปิด/ปิดช่องใส่ Body
+        function toggleBody() {
+            const method = document.getElementById('api-method').value;
+            const bodyContainer = document.getElementById('body-container');
+            const bodyTextarea = document.getElementById('request-body');
+
+            if (method === 'POST' || method === 'PUT') {
+                bodyContainer.classList.remove('hidden');
+                bodyTextarea.setAttribute('required', 'required');
+            } else {
+                bodyContainer.classList.add('hidden');
+                bodyTextarea.removeAttribute('required');
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-blue-700 tracking-tight">API Tester (อย่างง่าย)</h1>
+            <p class="text-gray-500 mt-2">ทดสอบ API และดูผลลัพธ์ในรูปแบบ JSON ที่อ่านง่าย</p>
+        </header>
+
+        <!-- ส่วนควบคุม API -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl mb-8 border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">ตั้งค่าคำขอ (Request Setup)</h2>
+
+            <!-- Method และ URL Input -->
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <!-- Method Selection -->
+                <div class="w-full md:w-1/4">
+                    <label for="api-method" class="block text-sm font-medium text-gray-700 mb-1">Method</label>
+                    <select id="api-method" onchange="toggleBody()" class="w-full border-gray-300 rounded-xl shadow-sm p-3 focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+                
+                <!-- URL Input -->
+                <div class="w-full md:w-3/4">
+                    <label for="api-url" class="block text-sm font-medium text-gray-700 mb-1">API URL (ตัวอย่าง: https://jsonplaceholder.typicode.com/posts/1)</label>
+                    <input type="url" id="api-url" placeholder="กรอก URL ปลายทาง" required 
+                           class="w-full border-gray-300 rounded-xl shadow-sm p-3 focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out">
+                </div>
+            </div>
+
+            <!-- Request Body (สำหรับ POST/PUT) -->
+            <div id="body-container" class="hidden mb-4">
+                <label for="request-body" class="block text-sm font-medium text-gray-700 mb-1">Request Body (JSON)</label>
+                <textarea id="request-body" rows="6" placeholder='{"key": "value", "user_id": 1}'
+                          class="w-full border-gray-300 rounded-xl shadow-sm p-3 font-mono text-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out"></textarea>
+                <p class="text-xs text-gray-500 mt-1">
+                    ระบบจะเพิ่ม Header 'Content-Type: application/json' ให้อัตโนมัติเมื่อใช้ POST/PUT
+                </p>
+            </div>
+
+            <!-- ปุ่มส่งคำขอ -->
+            <button onclick="sendRequest()" 
+                    class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition duration-200 ease-in-out transform hover:scale-[1.01] flex items-center justify-center">
+                <svg id="loading-indicator" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                ส่งคำขอ API
+            </button>
+        </div>
+
+        <!-- ส่วนแสดงผลลัพธ์ -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">ผลลัพธ์ (Response)</h2>
+
+            <!-- กล่องแสดงสถานะ -->
+            <div id="status-box" class="p-3 rounded-xl bg-gray-100 text-gray-700 w-full mb-4 transition duration-300">
+                <span id="status-code" class="font-bold text-lg"></span>
+                <p class="text-sm">รอการส่งคำขอ...</p>
+            </div>
+
+            <!-- กล่องแสดง Response Body -->
+            <pre id="result-content" class="json-viewer">
+รอการตอบกลับจาก API
+            </pre>
+        </div>
+
+    </div>
+
+    <!-- เรียกใช้ toggleBody ครั้งแรกเพื่อตั้งค่าการแสดงผล Body -->
+    <script>
+        document.addEventListener('DOMContentLoaded', toggleBody);
+    </script>
+</body>
+</html>
